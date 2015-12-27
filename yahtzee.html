@@ -1,0 +1,157 @@
+<html>
+<head>
+
+<!-- This section allows us to change the way things on the page look (CSS) -->
+<style>
+	.button { 
+		height: 50px; 
+		width: 120px;
+	}
+	body {
+		background-color: lightgrey;
+		font-family: sans-serif;
+	}
+	table { 
+		border: 2px solid black;
+		border-collapse: collapse;
+	 }
+	td { 
+		text-align: center;
+		padding: 10px;
+	}
+	thead { 
+		background-color: lightblue;
+	}
+</style>
+
+<!-- The script section has the code to control the hold buttons and roll the dice (Javascript) -->
+<script>
+
+var rollCount = 0; // This is the number of times we have rolled the dice
+
+/*
+ * Functions to control the hold buttons
+ */
+function getHoldState(idx) {
+    var element = document.getElementById('hold'+idx);
+    return element.checked;
+}
+function setHoldState(idx, held) {
+    var element = document.getElementById('hold'+idx);
+    element.checked = held;
+    console.log("hold button " + idx + " is now " + element.checked);
+}
+
+
+/*
+ * Roll a single dice
+ * Generate a random number between 1 and 6 and then set the HTML element text to that number
+ */
+function rollDice(idx) {
+	var v = Math.floor((Math.random()*6)+1);      // get a random number between 1 and 6
+	console.log("dice " + idx + " rolled: " + v); 
+	var e = document.getElementById("dice"+idx);  // set the text on the page to show the number
+	e.textContent = v;
+}
+
+/*
+ * Roll all the dice that do not have the hold button ticked
+ *
+ * First we have to find out which dice hold buttons are not ticked.
+ * Then we have to roll a new number for them.
+ * Lastly we have to update the number of times we have rolled the dice.
+ */
+function roll() {
+	var diceToRoll = []; // list of dice that we want to roll this go
+	for(var i=1; i<=5; i++) {
+		if(getHoldState(i) == false) {
+			diceToRoll.push(i); // add this dice index to our list of dice to roll
+		}
+	}
+	// now roll the dice!
+	console.log("rolling dice: " + diceToRoll);
+	for(var d=0; d<diceToRoll.length; d++) {
+		rollDice(diceToRoll[d]);
+	}
+	rollCount++; // We have rolled the dice, so increase the count by 1
+	var e = document.getElementById("rollCount");
+	e.textContent = "Roll Count = "+rollCount;
+}
+
+/*
+ * When we have rolled 3 times, we can let the user easily reset the 
+ * game, ready for the next person to have their go.
+ */
+function reset() {
+    // For all the dice....
+	for(var i=1; i<=5; i++) {
+		var e = document.getElementById("dice"+i);
+		e.textContent = "-";	// reset the dice value to -
+		setHoldState(i, false); // set the hold button to off
+	}
+	rollCount = 0;
+	var element = document.getElementById("rollCount");
+	element.textContent = "Roll Count = 0";
+}
+
+</script>
+</head>
+
+
+<!-- This section is where we say what we want on the page. Tables, buttons, text, etc (HTML) -->
+<body>
+
+<h2>Yahtzee!</h2>
+
+<!-- 
+	Table with the roll dice and reset buttons plus a counter
+	to show how many rolls we have had.
+	
+	By giving our html elements id names we can refer to them in our Javascript.
+	By giving them class names we can control the way they look with CSS.
+ -->
+<table>
+<tr>
+	<td><input class="button" type="button" value="Roll Dice" onclick="roll()"/></td>
+	<td><input class="button" type="button" value="Reset" onclick="reset()"/></td>
+	<td><p id="rollCount">Roll Count = 0</p></td>
+</tr>
+</table>
+<p/>
+
+<!--
+	Table with our hold buttons and dice numbers
+ -->
+<table>
+<thead>
+	<tr> <!-- Table column titles -->
+		<td></td>
+		<td>Dice 1</td>
+		<td>Dice 2</td>
+		<td>Dice 3</td>
+		<td>Dice 4</td>
+		<td>Dice 5</td>
+	</tr>
+</thead>
+<tbody>
+	<tr> <!-- Table rows and cells -->
+		<td>Hold dice</td>
+		<td><input class="holdButton" type="checkbox" id="hold1"/></td>
+		<td><input class="holdButton" type="checkbox" id="hold2"/></td>
+		<td><input class="holdButton" type="checkbox" id="hold3"/></td>
+		<td><input class="holdButton" type="checkbox" id="hold4"/></td>
+		<td><input class="holdButton" type="checkbox" id="hold5"/></td>
+	</tr>
+	<tr>
+		<td>Value</td>
+		<td><p id="dice1"/>-</td>
+		<td><p id="dice2"/>-</td>
+		<td><p id="dice3"/>-</td>
+		<td><p id="dice4"/>-</td>
+		<td><p id="dice5"/>-</td>
+	</tr>
+</tbody>
+</table>
+
+</body>
+</html>
