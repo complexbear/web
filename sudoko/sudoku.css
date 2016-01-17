@@ -1,0 +1,17 @@
+table {
+	border: 2px solid black;
+	border-spacing: 0px;
+}
+table.inner {
+	border: 0px;
+}
+
+td {
+    border: 1px solid grey;
+    border-spacing: 0px;
+}
+
+
+.selected {
+	background-color: cyan;
+}
