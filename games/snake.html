@@ -1,4 +1,5 @@
 <html>
+<p id="score" style="font: 14px sans-serif">Score: 0</p>
 <canvas id="canvas" width="400" height="400"/>
 <script>
   // Game state
@@ -11,6 +12,7 @@
   tailCount = 5;
 
   window.onload = function(){
+    score = document.getElementById("score");
     canvas = document.getElementById("canvas");
     ctx = canvas.getContext("2d");
     ctx.font = "bold 14px verdana, sans-serif";
@@ -42,8 +44,7 @@
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
     // Score
-    ctx.fillStyle = "white";
-    ctx.fillText("score:"+tailCount, 5, 20);
+    score.innerText = "Score: " + tailCount;
 
     // Render snake
     ctx.fillStyle = "lime";
