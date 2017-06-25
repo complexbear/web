@@ -1,0 +1,102 @@
+<html>
+<canvas id="canvas" width="400" height="400"/>
+<script>
+  // Game state
+  vx=vy=0;
+  px=py=10;
+  ax=ay=15;
+  gridSize=20;
+  tileCount=20;
+  tails=[];
+  tailCount = 5;
+
+  window.onload = function(){
+    canvas = document.getElementById("canvas");
+    ctx = canvas.getContext("2d");
+    ctx.font = "bold 14px verdana, sans-serif";
+
+    window.addEventListener("keydown", controls);
+    intervalId = setInterval(game, 1000/15);
+  }
+
+  game = function() {
+    px += vx;
+    py += vy;
+
+    // Wrap position
+    if(px<0) {
+        px=tileCount-1;
+    }
+    if(px>tileCount-1) {
+      px = 0;
+    }
+    if(py<0) {
+      py=tileCount-1;
+    }
+    if(py>tileCount-1) {
+      py=0;
+    }
+
+    // Render background
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    // Score
+    ctx.fillStyle = "white";
+    ctx.fillText("score:"+tailCount, 5, 20);
+
+    // Render snake
+    ctx.fillStyle = "lime";
+    for(var i=0; i<tails.length; i++) {
+      ctx.fillRect(tails[i].x*gridSize,
+                   tails[i].y*gridSize,
+                   gridSize-2, gridSize-2);
+      if(tails[i].x == px && tails[i].y == py) {
+        // Collision with tail
+        tailCount = 5;
+      }
+    }
+
+    // Lengthen tail and remove extra according to set tail count
+    tails.push({x:px, y:py});
+    while(tails.length>tailCount) {
+      tails.shift();
+    }
+
+    // Has snake hit the apple
+    if(px == ax && py == ay) {
+      tailCount++;
+      ax=Math.floor(Math.random()*tileCount);
+      ay=Math.floor(Math.random()*tileCount);
+    }
+
+    // Render apple
+    ctx.fillStyle = "red";
+    ctx.fillRect(ax*gridSize, ay*gridSize, gridSize-2, gridSize-2);
+  }
+
+  controls = function(key) {
+    switch(key.keyCode) {
+      case 37: // left
+        vx=-1;vy=0;
+        break;
+      case 38: // down
+        vx=0;vy=-1;
+        break;
+      case 39: // right
+        vx=1;vy=0;
+        break;
+      case 40: // up
+        vx=0;vy=1;
+        break;
+      case 32: // space (pause game)
+        if(intervalId === null) {
+          intervalId = setInterval(game, 1000/15);
+        } else {
+          clearInterval(intervalId);
+          intervalId=null;
+        }
+    }
+  }
+</script>
+</html>
