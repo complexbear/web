@@ -1,0 +1,119 @@
+<canvas id="canvas" width="400" height="400"/>
+<script>
+
+// Game state
+posX=5;posY=200;
+velX=velY=0;
+bullets=[];
+bulletSpeed=10;
+aliens=[];
+
+// Initialize
+window.onload = function() {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+
+  window.addEventListener("keydown", keyDown);
+  window.addEventListener("keyup", keyUp);
+  setInterval(game, 1000/15);
+  setInterval(addAlien, 5000);
+}
+
+function game() {
+  // Move actors etc
+  updateState();
+  // Render
+  render();
+}
+
+function updateState() {
+  var i=0, b;
+
+  // Move player
+  posX += velX;
+  posY += velY;
+
+  while(bullets && i<bullets.length) {
+    b = bullets[i];
+    // Remove bullet if off the screen
+    if(b.x > canvas.width) {
+      bullets.shift();
+      continue;
+    }
+
+    // Has bullet hit alien?
+    if(alienHit(b)) {
+      bullets.shift();
+      continue;
+    }
+
+    // Move bullet
+    b.x += bulletSpeed;
+    i++;
+  }
+}
+
+function alienHit(bullet) {
+  for(var i=0; i<aliens.length; i++) {
+    if(aliens[i].x == bullet.x && aliens[i].y == bullet.y) {
+      aliens.shift;
+      return true;
+    }
+  }
+  return false;
+}
+
+function render() {
+  // Clear screen
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Spaceship
+  ctx.fillStyle = "lime";
+  ctx.fillRect(posX, posY, 30, 20);
+
+  // Bullets
+  ctx.fillStyle = "white";
+  for(var i=0; i<bullets.length; i++) {
+    ctx.fillRect(bullets[i].x, bullets[i].y, 5, 1);
+  }
+
+  // Aliens
+  ctx.fillStyle = "red";
+  for(var i=0; i<aliens.length; i++) {
+    ctx.fillRect(aliens[i].x, aliens[i].y, 5, 5);
+  }
+}
+
+addAlien = function() {
+  aliens.push({x: canvas.width - 30,
+               y: Math.floor(Math.random() * canvas.height)})
+}
+
+keyDown = function(event) {
+  control(event, 5)
+}
+keyUp = function(event) {
+  control(event, 0);
+}
+control = function(event, step) {
+  switch(event.keyCode) {
+    case 37: // left
+      velX = -step;
+      break;
+    case 38: // down
+      velY = -step;
+      break;
+    case 39: // right
+      velX = step;
+      break;
+    case 40: // up
+      velY = step;
+      break;
+    case 32: // space (fire)
+      bullets.push({x: posX, y:posY + 10});
+      break;
+  }
+}
+
+</script>
