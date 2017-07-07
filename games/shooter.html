@@ -1,3 +1,4 @@
+<p id="score">Score: </p>
 <canvas id="canvas" width="400" height="400"/>
 <script>
 
@@ -6,17 +7,23 @@ posX=5;posY=200;
 velX=velY=0;
 bullets=[];
 bulletSpeed=10;
+
 aliens=[];
+alienSize=5;
+playerSpeed=10;
+
+score=0;
 
 // Initialize
 window.onload = function() {
+  scoreText = document.getElementById("score");
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
 
   window.addEventListener("keydown", keyDown);
   window.addEventListener("keyup", keyUp);
   setInterval(game, 1000/15);
-  setInterval(addAlien, 5000);
+  setInterval(addAlien, 3000);
 }
 
 function game() {
@@ -55,8 +62,13 @@ function updateState() {
 
 function alienHit(bullet) {
   for(var i=0; i<aliens.length; i++) {
-    if(aliens[i].x == bullet.x && aliens[i].y == bullet.y) {
-      aliens.shift;
+    if(bullet.x >= aliens[i].x &&
+       bullet.x <= aliens[i].x + alienSize &&
+       bullet.y >= aliens[i].y &&
+       bullet.y <= aliens[i].y + alienSize) {
+      aliens.splice(i, 1);
+      score++;
+      console.log('alien hit! ' + aliens.length);
       return true;
     }
   }
@@ -81,17 +93,22 @@ function render() {
   // Aliens
   ctx.fillStyle = "red";
   for(var i=0; i<aliens.length; i++) {
-    ctx.fillRect(aliens[i].x, aliens[i].y, 5, 5);
+    ctx.fillRect(aliens[i].x, aliens[i].y, alienSize, alienSize);
   }
+
+  // score
+  scoreText.innerText = "Score: " + score;
 }
 
 addAlien = function() {
-  aliens.push({x: canvas.width - 30,
-               y: Math.floor(Math.random() * canvas.height)})
+  if(aliens.length < 50) {
+    aliens.push({x: canvas.width - 30,
+                 y: Math.floor(Math.random() * canvas.height)})
+  }
 }
 
 keyDown = function(event) {
-  control(event, 5)
+  control(event, playerSpeed);
 }
 keyUp = function(event) {
   control(event, 0);
@@ -111,7 +128,7 @@ control = function(event, step) {
       velY = step;
       break;
     case 32: // space (fire)
-      bullets.push({x: posX, y:posY + 10});
+      bullets.push({x: posX, y: posY});
       break;
   }
 }
