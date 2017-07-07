@@ -1,6 +1,6 @@
 <html>
 <p id="score" style="font: 14px sans-serif">Score: 0</p>
-<canvas id="canvas" width="400" height="400"/>
+<canvas id="canvas" width="600" height="600"/>
 <script>
   // Game state
   vx=vy=0;
@@ -14,10 +14,12 @@
   window.onload = function(){
     score = document.getElementById("score");
     canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth - 30;
+    canvas.height = window.innerHeight - 50;
     ctx = canvas.getContext("2d");
-    ctx.font = "bold 14px verdana, sans-serif";
 
     window.addEventListener("keydown", controls);
+    window.addEventListener("click", click);
     intervalId = setInterval(game, 1000/15);
   }
 
@@ -74,6 +76,23 @@
     // Render apple
     ctx.fillStyle = "red";
     ctx.fillRect(ax*gridSize, ay*gridSize, gridSize-2, gridSize-2);
+  }
+
+  click = function(event) {
+      // If snake is travelling left/right detect up/down
+      // or vice versa
+      var keyCode = 0;
+      if(vx) {
+        keyCode = event.clientY > canvas.height / 2 ? 40 : 38;
+        console.log('y: ' + event.clientY)
+      } else if (vy) {
+        keyCode = event.clientX > canvas.width / 2 ? 39 : 37;
+        console.log('x: ' + event.clientX);
+      } else {
+        // Initial start, snake not moving
+        keyCode = 39;
+      }
+      controls({keyCode: keyCode});
   }
 
   controls = function(key) {
