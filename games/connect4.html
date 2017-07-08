@@ -1,0 +1,87 @@
+<canvas id="canvas" width=400 height=500/>
+<script>
+
+// Game state
+numCols = 8;
+numRows = 8;
+token = {col: numCols/2,
+         row: 0,
+         color: 'red'};
+tokenSize = canvas.width/numCols;
+boardState = [];
+
+// Initialize
+window.onload = function() {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  window.addEventListener("keydown", keyDown);
+
+  for(var c=0; c<numCols; c++) {
+    boardState.push(new Array(numRows));
+  }
+
+  draw();
+}
+
+function drop() {
+  // Find resting position
+  var col = boardState[token.col],
+      targetRow = numRows;
+  while(targetRow--) {
+    if(col[targetRow] === undefined) {
+      col[targetRow] = token.color;
+      break;
+    }
+  }
+  // Next token...
+  token = {
+    col: numCols/2,
+    row: 0,
+    color: token.color == 'red' ? 'yellow' : 'red'
+  }
+}
+
+function draw() {
+  // Current token
+ ctx.fillStyle = 'black';
+ ctx.fillRect(0, 0, canvas.width, 30);
+ ctx.fillStyle = token.color;
+ ctx.fillRect(token.col*tokenSize, 0, tokenSize, tokenSize);
+
+  // Grid
+  for(var c=0; c<numCols; c++) {
+    for(var r=0; r<numRows; r++) {
+      var t = boardState[c][r];
+      if(t === undefined) {
+        ctx.fillStyle = 'black';
+      } else {
+        ctx.fillStyle = t;
+      }
+      ctx.fillRect(c*tokenSize, (r*tokenSize) + 30, tokenSize, tokenSize);
+    }
+  }
+}
+
+// Controls
+// Left / right and spcae to drop token
+function keyDown(key) {
+  switch(key.keyCode) {
+    case 37:
+      token.col = Math.max(token.col-1, 0);
+      break;
+    case 39:
+      token.col = Math.min(token.col+1, numCols-1);
+      break;
+    case 32:
+      drop();
+      break;
+  }
+  draw();
+}
+
+
+</script>
