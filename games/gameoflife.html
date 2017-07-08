@@ -1,0 +1,116 @@
+<canvas id="canvas" width=600, height=600/>
+<script>
+
+// Game of Life cellular autonoma
+cellSize = 2;
+numCols = canvas.width/cellSize;
+numRows = canvas.height/cellSize;
+world = [];
+nextWorld = [];
+isEvolving = true;
+
+// States
+alive = 'a';
+dying = 'd';
+dead = null;
+
+window.onload = function() {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+
+  tickId = window.setInterval(evolve, 1000/15);
+  window.addEventListener('keydown', keyDown);
+
+  for(var i=0; i<numRows; i++) {
+    world.push(new Array(numCols));
+    nextWorld.push(new Array(numCols));
+  }
+
+  // Randomly initialize
+  init(0.05);
+  draw();
+}
+
+function init(threshold) {
+  for(var r=0; r<numRows; r++) {
+    for(var c=0; c<numCols; c++) {
+      if(Math.random() < threshold) {
+        world[r][c] = 'a';
+      }
+    }
+  }
+}
+
+function cell(r, c) {
+  if(r>=numRows) r=0;
+  if(c>=numCols) c=0;
+  if(r<0) r=numRows-1;
+  if(c<0) c=numCols-1;
+  return world[r][c];
+}
+
+function evolveCell(r, c) {
+  // Rules
+  // If cell is alive, it begins to die
+  // If cell is dying, it becomes dead
+  // If a cell is nothing but 2 or more neighbours alive it is born
+  if(world[r][c] === alive) {
+    return dying;
+  } else if (world[r][c] === dying) {
+    return dead;
+  } else {
+    var sum = 0;
+    for(var rr=-1; rr<2; rr++) {
+      for(var cc=-1; cc<2; cc++) {
+        if(cell(r+rr, c+cc) === alive) {
+          sum++;
+        }
+      }
+    }
+    if(sum == 2) {
+      return alive;
+    }
+  }
+}
+
+function evolve() {
+  if(! isEvolving) {
+    return;
+  }
+
+  // Cycle through all cells.
+  for(var r=0; r<numRows; r++) {
+    for(var c=0; c<numCols; c++) {
+      nextWorld[r][c] = evolveCell(r, c);
+    }
+  }
+
+  tmp = world;
+  world = nextWorld;
+  nextWorld = tmp;
+  draw();
+}
+
+function draw() {
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  for(var r=0; r<numRows; r++) {
+    for(var c=0; c<numCols; c++) {
+      if(world[r][c]) {
+        ctx.fillStyle = world[r][c] === alive ? 'lime' : 'blue';
+        ctx.fillRect(c*cellSize, r*cellSize, cellSize-1, cellSize-1);
+      }
+    }
+  }
+}
+
+function keyDown(key) {
+  if(key.keyCode == 32) {
+    // start / stop life
+    isEvolving = ! isEvolving;
+    //evolve();
+  }
+}
+
+</script>
