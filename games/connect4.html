@@ -9,11 +9,13 @@ token = {col: numCols/2,
          color: 'red'};
 tokenSize = canvas.width/numCols;
 boardState = [];
+gameOver = false;
 
 // Initialize
 window.onload = function() {
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
+  ctx.font = "48px sans-serif";
 
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -37,20 +39,25 @@ function drop() {
       break;
     }
   }
+
   // Next token...
   token = {
     col: numCols/2,
     row: 0,
     color: token.color == 'red' ? 'yellow' : 'red'
   }
+
+  if(checkForWin()) {
+    gameOver = true;
+  }
 }
 
 function draw() {
   // Current token
  ctx.fillStyle = 'black';
- ctx.fillRect(0, 0, canvas.width, 30);
+ ctx.fillRect(0, 0, canvas.width, tokenSize);
  ctx.fillStyle = token.color;
- ctx.fillRect(token.col*tokenSize, 0, tokenSize, tokenSize);
+ ctx.fillRect(token.col*tokenSize, 0, tokenSize-1, tokenSize-1);
 
   // Grid
   for(var c=0; c<numCols; c++) {
@@ -61,9 +68,47 @@ function draw() {
       } else {
         ctx.fillStyle = t;
       }
-      ctx.fillRect(c*tokenSize, (r*tokenSize) + 30, tokenSize, tokenSize);
+      ctx.fillRect(c*tokenSize, (r*tokenSize) + 30, tokenSize-1, tokenSize-1);
     }
   }
+}
+
+function matchToken(r, c) {
+  var targetColor = boardState[c][r];
+  // We only have to check upwards and horizontally
+  var checks = [
+    function(p) { return {r:p.r, c:p.c+1}; }, // check right
+    function(p) { return {r:p.r-1, c:p.c}; }, // check up
+    function(p) { return {r:p.r-1, c:p.c+1}; },// check upper right
+    function(p) { return {r:p.r-1, c:p.c-1}; }// check upper left
+  ];
+
+  for(var i=0; i<checks.length; i++) {
+    var pos = {r:r, c:c},
+        newCount = 0;
+    while(boardState[pos.c][pos.r] == targetColor) {
+      pos = checks[i](pos);
+      newCount++;
+      if(newCount >= 4) return true;
+    }
+  }
+  return false;
+}
+
+function checkForWin() {
+  // From the bottom row, check each token
+  // Iterate up the rows, stop if row is empty
+  for(var r=numRows-1; r>=0; r--) {
+    var allEmpty = true;
+    for(var c=0; c<numCols; c++) {
+      if(boardState[c][r] !== undefined) {
+        allEmpty = false
+        if(matchToken(r, c)) return true;
+      }
+    }
+    if(allEmpty) return false;
+  }
+  return false;
 }
 
 // Controls
@@ -81,6 +126,10 @@ function keyDown(key) {
       break;
   }
   draw();
+  if(gameOver) {
+    ctx.fillStyle = 'lime';
+    ctx.fillText(token.color + " LOSES", canvas.width/4, 50);
+  }
 }
 
 
