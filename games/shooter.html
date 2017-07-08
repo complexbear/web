@@ -9,9 +9,11 @@ bullets=[];
 bulletSpeed=10;
 
 aliens=[];
-alienSize=5;
+alienSize=10;
 playerSpeed=10;
 
+gameOver=false;
+events=[];
 score=0;
 
 // Initialize
@@ -19,11 +21,12 @@ window.onload = function() {
   scoreText = document.getElementById("score");
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
+  ctx.font = "48px sans-serif";
 
   window.addEventListener("keydown", keyDown);
   window.addEventListener("keyup", keyUp);
-  setInterval(game, 1000/15);
-  setInterval(addAlien, 3000);
+  events.push(setInterval(game, 1000/15));
+  events.push(setInterval(addAlien, 3000));
 }
 
 function game() {
@@ -39,6 +42,15 @@ function updateState() {
   // Move player
   posX += velX;
   posY += velY;
+
+  // Has alien hit player?
+  if(playerHit()) {
+    gameOver=true;
+    for (var i=0; i<events.length; i++) {
+      clearInterval(events[i]);
+    }
+    return;
+  }
 
   while(bullets && i<bullets.length) {
     b = bullets[i];
@@ -75,7 +87,25 @@ function alienHit(bullet) {
   return false;
 }
 
+function playerHit() {
+    for(var i=0; i<aliens.length; i++) {
+      var a = aliens[i];
+      if(posX >= a.x &&
+         posX <= a.x + alienSize &&
+         posY >= a.y &&
+         posY <= a.y + alienSize) {
+           return true;
+         }
+    }
+    return false;
+}
+
 function render() {
+  if(gameOver) {
+    ctx.fillStyle = "red";
+    ctx.fillText("GAME OVER", canvas.width/4, canvas.height/2);
+    return;
+  }
   // Clear screen
   ctx.fillStyle = "black";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
