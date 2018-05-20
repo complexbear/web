@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <style>
+            label {
+                font-size: 16px;
+                font-family: sans-serif;
+                font-weight: bold;
+            }
+            div {
+                border-style: solid;
+                border-width: 1px;
+                border-color: grey;
+                padding: 10px;
+                margin: 5px;     
+                width: 800;           
+            }
+            #canvas_area {
+                position: relative;                
+                height: 800;
+            }
+            canvas {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        </style>
+        <script type="text/javascript" src="bikesetup.js"></script>     
+    </head>
+    <body>
+        <div id="header">
+            <!-- controls for loading the image -->
+            <label for="fileInput">Open image</label>
+            <input id="fileInput" type="file"/>
+        </div>
+        <div id="canvas_area">
+            <canvas id="img_canvas" z-index=0 width=800, height=800></canvas>
+            <canvas id="draw_canvas" z-index=1  width=800, height=800></canvas>
+        </div>
+    </body>
+</html>
