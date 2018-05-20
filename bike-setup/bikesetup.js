@@ -38,7 +38,7 @@ findAngle = function(first, center, last) {
     let a1 = Math.atan2(first.y - center.y, first.x - center.x),
         a2 = Math.atan2(last.y - center.y, last.x - center.x),
         angle = (a1 - a2) * (180 / Math.PI);
-    if(angle > 180) angle -= 180;
+    if(angle > 180) angle = Math.abs(angle - 360);
     return angle;
 }
 
