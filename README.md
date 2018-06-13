@@ -1,5 +1,5 @@
 # Web
-This repo holds anything related to web tech. JS, Node, AWS, etc...
+This repo holds anything related to web tech. JS, Node, etc...
 
 ## Games
 There is a small collection of javascript based games, very hacky and purely for the fun of remaking classics.
@@ -9,6 +9,5 @@ There is a small collection of javascript based games, very hacky and purely for
 * Yahtzee
 * Shoot-em-up
 
-## EventTracker
-A web app built in AWS for tracking arbitrary events. Uses API built directly on top of the DB for data storage & retrieval. Front end is React + ??
-(TDB)
+## Bike-setup
+A self contained 2 file web page that allows the user to load a local image and then draw connected lines over the image. The angles between the connected lines is calculated and shown. Useful for checking body geometry on bikes!
