@@ -1,0 +1,29 @@
+.footerGrid {
+    display: grid;
+    grid-template-areas: 'main games github instagram credits';
+    grid-gap: 20px;
+    align-content: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.main {
+    grid-area: main;
+    color: black;
+}
+
+.github {
+    grid-area: github;
+}
+
+.games {
+    grid-area: games;
+}
+
+.instagram {
+    grid-area: instagram;
+}
+
+.credits {
+    grid-area: credits;
+}
