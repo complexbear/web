@@ -623,3 +623,7 @@ pre tt:after {
     font-size: 100%;
   }
 }
+
+.thumbnail {
+  max-height: 200px;
+}
